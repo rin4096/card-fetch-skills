@@ -20,11 +20,24 @@ python3 ./scripts/bandori_bestdori.py --character "Anon" --rarity 5
 - `--rarity`: Card rarity (1-5).
 - `--server`: Asset server (default: `jp`). Options: `jp`, `en`, `cn`, `tw`, `kr`.
 - `--skill-level`: Skill level (1-5). Replaces `{0}` in skill descriptions with the proper seconds.
+- `--cache-hours`: Cache API responses (default 24h).
+- `--limit`: Limit number of cards.
+- `--latest`: Sort by latest release first.
+- `--fields`: Comma-separated fields to keep (e.g., `id,prefix,skill,urls`).
+- `--skill-id`: Filter by skill id.
+- `--skill-keyword`: Filter by keyword in CN skill description.
+- `--format`: Output format (`json` or `text`).
 
 ### Skill Output
 Each card now includes:
 - `skill.descriptionByLevel`: Chinese description expanded for levels 1-5
 - `skill.simpleDescriptionByLevel`: Chinese simple description expanded for levels 1-5
+
+### Text Output
+Use `--format text` to output readable text:
+- Title uses JP prefix + JP character name
+- Card art is printed on new lines (normal / trained)
+- Skill is expanded by level (1-5)
 
 ### Character ID Cheat Sheet
 - **Poppin'Party**: 1-5
