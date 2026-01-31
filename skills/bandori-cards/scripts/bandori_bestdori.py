@@ -7,6 +7,7 @@ import argparse
 # Bestdori API Endpoints
 CARDS_API = "https://bestdori.com/api/cards/all.5.json"
 CHARACTERS_API = "https://bestdori.com/api/characters/all.2.json"
+SKILLS_API = "https://bestdori.com/api/skills/all.5.json"
 ASSETS_BASE_URL = "https://bestdori.com/assets"
 
 def get_character_map():
@@ -17,9 +18,38 @@ def get_character_map():
         print(f"Error fetching characters: {e}", file=sys.stderr)
     return {}
 
-def fetch_cards(character_query=None, rarity=None, server="jp"):
+def get_skills_map():
+    try:
+        resp = requests.get(SKILLS_API)
+        return resp.json()
+    except Exception as e:
+        print(f"Error fetching skills: {e}", file=sys.stderr)
+    return {}
+
+
+def apply_skill_level(desc: str, durations, level: int):
+    if not desc or not durations or not level:
+        return desc
+    try:
+        idx = max(1, min(level, len(durations))) - 1
+        return desc.replace("{0}", str(durations[idx]))
+    except Exception:
+        return desc
+
+
+def expand_skill_levels(desc: str, durations):
+    if not desc or not durations:
+        return None
+    expanded = {}
+    for i in range(1, len(durations) + 1):
+        expanded[str(i)] = apply_skill_level(desc, durations, i)
+    return expanded
+
+
+def fetch_cards(character_query=None, rarity=None, server="jp", skill_level=None):
     try:
         char_map = get_character_map()
+        skills_map = get_skills_map()
         target_char_id = None
         
         if character_query:
@@ -81,6 +111,30 @@ def fetch_cards(character_query=None, rarity=None, server="jp"):
             elif len(prefixes) > 1 and prefixes[1]: display_prefix = prefixes[1]
             elif len(prefixes) > 0 and prefixes[0]: display_prefix = prefixes[0]
 
+            # Skill info (Chinese - index 3)
+            skill_id = card.get("skillId")
+            skill = skills_map.get(str(skill_id), {}) if skill_id else {}
+            skill_desc_cn = None
+            skill_simple_cn = None
+            skill_durations = None
+            desc_list = []
+            simple_list = []
+            if skill:
+                desc_list = skill.get("description", [])
+                simple_list = skill.get("simpleDescription", [])
+                skill_desc_cn = desc_list[3] if len(desc_list) > 3 else None
+                skill_simple_cn = simple_list[3] if len(simple_list) > 3 else None
+                skill_durations = skill.get("duration")
+
+            # Apply skill level to replace {0}
+            if skill_level:
+                skill_desc_cn = apply_skill_level(skill_desc_cn, skill_durations, skill_level)
+                skill_simple_cn = apply_skill_level(skill_simple_cn, skill_durations, skill_level)
+
+            # Expand skill levels (1-5) using template desc (before optional single-level replacement)
+            expanded_desc = expand_skill_levels(desc_list[3] if skill else None, skill_durations)
+            expanded_simple = expand_skill_levels(simple_list[3] if skill else None, skill_durations)
+
             card_info = {
                 "id": int(card_id),
                 "characterId": card.get("characterId"),
@@ -88,6 +142,15 @@ def fetch_cards(character_query=None, rarity=None, server="jp"):
                 "rarity": card.get("rarity"),
                 "prefix": display_prefix,
                 "attribute": card.get("attribute"),
+                "type": card.get("type"),
+                "skill": {
+                    "id": skill_id,
+                    "simpleDescription": skill_simple_cn,
+                    "description": skill_desc_cn,
+                    "duration": skill_durations,
+                    "simpleDescriptionByLevel": expanded_simple,
+                    "descriptionByLevel": expanded_desc
+                },
                 "urls": {
                     "normal": f"{base_path}/card_normal.png",
                     "trained": f"{base_path}/card_after_training.png" if card.get("rarity") >= 3 else None
@@ -105,6 +168,7 @@ if __name__ == "__main__":
     parser.add_argument("--character", help="Character name (e.g. Anon, Tomori)")
     parser.add_argument("--rarity", type=int, help="Rarity (1-5)")
     parser.add_argument("--server", default="jp", help="Server (jp, en, cn, etc.)")
+    parser.add_argument("--skill-level", type=int, help="Skill level (1-5) to resolve {0} in skill descriptions")
     
     args = parser.parse_args()
-    fetch_cards(args.character, args.rarity, args.server)
+    fetch_cards(args.character, args.rarity, args.server, args.skill_level)
