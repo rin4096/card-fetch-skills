@@ -89,7 +89,12 @@ def apply_skill_level(desc: str, durations, level: int):
         return desc
     try:
         idx = max(1, min(level, len(durations))) - 1
-        return desc.replace("{0}", str(durations[idx]))
+        dur = str(durations[idx])
+        # If {1} exists, it's usually duration; keep {0} as-is
+        if "{1}" in desc:
+            return desc.replace("{1}", dur)
+        # Otherwise, use {0} for duration
+        return desc.replace("{0}", dur)
     except Exception:
         return desc
 
@@ -128,7 +133,8 @@ def format_card_text(card_info):
 
 
 def fetch_cards(character_query=None, rarity=None, server="jp", skill_level=None, cache_hours=24,
-               limit=None, latest=False, fields=None, skill_id=None, skill_keyword=None, output_format="json"):
+               limit=None, latest=False, fields=None, skill_id=None, skill_keyword=None, prefix_keyword=None,
+               output_format="json"):
     try:
         char_map = get_character_map(cache_hours)
         skills_map = get_skills_map(cache_hours)
@@ -164,7 +170,14 @@ def fetch_cards(character_query=None, rarity=None, server="jp", skill_level=None
         results = []
         # Sort logic
         if latest:
-            sorted_keys = sorted(all_cards.keys(), key=lambda x: (all_cards[x].get("releasedAt", 0), int(x)), reverse=True)
+            def _rel_key(x):
+                r = all_cards[x].get("releasedAt")
+                try:
+                    r = int(r) if r is not None else 0
+                except Exception:
+                    r = 0
+                return (r, int(x))
+            sorted_keys = sorted(all_cards.keys(), key=_rel_key, reverse=True)
         else:
             sorted_keys = sorted(all_cards.keys(), key=lambda x: (all_cards[x].get("rarity", 0), int(x)), reverse=True)
 
@@ -196,6 +209,10 @@ def fetch_cards(character_query=None, rarity=None, server="jp", skill_level=None
             if len(prefixes) > 3 and prefixes[3]: display_prefix = prefixes[3]
             elif len(prefixes) > 1 and prefixes[1]: display_prefix = prefixes[1]
             elif len(prefixes) > 0 and prefixes[0]: display_prefix = prefixes[0]
+            # Prefix filter (match any language)
+            if prefix_keyword:
+                if not any(p and prefix_keyword.lower() in p.lower() for p in prefixes):
+                    continue
             # JP prefix/name for display
             prefix_jp = prefixes[0] if len(prefixes) > 0 else None
             char_name_jp = char_names[0] if len(char_names) > 0 else None
@@ -283,9 +300,10 @@ if __name__ == "__main__":
     parser.add_argument("--fields", help="Comma-separated fields to keep (e.g., id,prefix,skill,urls)")
     parser.add_argument("--skill-id", type=int, help="Filter by skill id")
     parser.add_argument("--skill-keyword", help="Filter by keyword in CN skill description")
+    parser.add_argument("--prefix", help="Filter by card prefix keyword (any language)")
     parser.add_argument("--format", choices=["json", "text"], default="json", help="Output format")
     
     args = parser.parse_args()
     fields = [f.strip() for f in args.fields.split(',')] if args.fields else None
     fetch_cards(args.character, args.rarity, args.server, args.skill_level, args.cache_hours,
-                args.limit, args.latest, fields, args.skill_id, args.skill_keyword, args.format)
+                args.limit, args.latest, fields, args.skill_id, args.skill_keyword, args.prefix, args.format)

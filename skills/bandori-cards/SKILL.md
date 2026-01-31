@@ -26,6 +26,7 @@ python3 ./scripts/bandori_bestdori.py --character "Anon" --rarity 5
 - `--fields`: Comma-separated fields to keep (e.g., `id,prefix,skill,urls`).
 - `--skill-id`: Filter by skill id.
 - `--skill-keyword`: Filter by keyword in CN skill description.
+- `--prefix`: Filter by card prefix keyword (any language).
 - `--format`: Output format (`json` or `text`).
 
 ### Skill Output
