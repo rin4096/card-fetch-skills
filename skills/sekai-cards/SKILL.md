@@ -16,13 +16,13 @@ Use the provided script to fetch the latest card for a character.
 Run the script with the character name (ena or mizuki) or a character ID.
 
 ```bash
-python3 scripts/get_card.py <character_name_or_id>
+python3 skills/sekai-cards/scripts/get_card.py <character_name_or_id>
 ```
 
 Or fetch a card directly by its title (prefix):
 
 ```bash
-python3 scripts/get_card.py --prefix "夕暮れの窓辺"
+python3 skills/sekai-cards/scripts/get_card.py --prefix "夕暮れの窓辺"
 ```
 
 The script will output (fixed format, Chinese labels):
