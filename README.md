@@ -12,7 +12,7 @@
 
 ### 2. BanG Dream! (Bandori) 卡面获取
 - **技能路径**: `skills/bandori-cards/`
-- **功能**: 使用 Bestdori API 获取卡面。支持 MyGO!!!!! 等成员。
+- **功能**: 使用 Bestdori API 获取卡面，支持 MyGO!!!!! 等成员。支持搜索卡面前缀或卡片详情（招募台词/Flavor Text 等）。
 - **脚本**: `skills/bandori-cards/scripts/bandori_bestdori.py`
 
 ## 使用方法
@@ -34,4 +34,5 @@ workspace/
 ```
 
 ## 更新日志
+- **2026-01-31**: `bandori-cards` 支持搜索卡片详情（招募台词/Flavor Text），例如搜索 `Kitty` 会扫描 gacha quote。
 - **2026-01-31**: 更新了 `sekai-cards` 的 SOP，规范了绘名要求的详细情报输出格式。

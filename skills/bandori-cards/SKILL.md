@@ -9,7 +9,7 @@ Fetch character card data, skill info (Chinese), and image URLs for BanG Dream! 
 
 ## Usage
 
-Use the python script to fetch cards. You can filter by character name, rarity, and server.
+Use the python script to fetch cards. You can filter by character name, rarity, and server. Keyword searches now scan card details (gacha quotes/flavor text) when needed.
 
 ```bash
 python3 ./scripts/bandori_bestdori.py --character "Anon" --rarity 5
@@ -26,13 +26,19 @@ python3 ./scripts/bandori_bestdori.py --character "Anon" --rarity 5
 - `--fields`: Comma-separated fields to keep (e.g., `id,prefix,skill,urls`).
 - `--skill-id`: Filter by skill id.
 - `--skill-keyword`: Filter by keyword in CN skill description.
-- `--prefix`: Filter by card prefix keyword (any language).
+- `--prefix`: Filter by keyword in card prefix **or** card details (gacha quote/flavor text, skill name). If the prefix doesn’t match, the script fetches card detail to search `gachaText`/`skillName` (e.g., searching `Kitty` will match gacha quotes).
 - `--format`: Output format (`json` or `text`).
 
 ### Skill Output
 Each card now includes:
 - `skill.descriptionByLevel`: Chinese description expanded for levels 1-5
 - `skill.simpleDescriptionByLevel`: Chinese simple description expanded for levels 1-5
+
+### Detail Fields (Optional)
+When detail data is fetched, cards can include:
+- `gachaText`: Gacha quote / flavor text
+- `skillName`: Skill name text
+- `episodes`: Episode metadata
 
 ### Text Output
 Use `--format text` to output readable text:
