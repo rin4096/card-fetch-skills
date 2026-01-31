@@ -125,10 +125,16 @@ def format_card_text(card_info):
     lines.append("\n**技能（ID: {}）**".format(skill.get('id')))
     if skill.get('simpleDescription'):
         lines.append(f"- 简述：{skill.get('simpleDescription')}")
-    if skill.get('descriptionByLevel'):
-        lines.append("- 详细（按技能等级）：")
-        for lv in sorted(skill['descriptionByLevel'].keys(), key=lambda x: int(x)):
-            lines.append(f"  - Lv{lv}：{skill['descriptionByLevel'][lv]}")
+    if skill.get('descriptionByLevel') and skill.get('duration'):
+        durs = skill.get('duration')
+        levels = "/".join([str(i) for i in range(1, len(durs)+1)])
+        seconds = "/".join([str(d) for d in durs])
+        # Use level 1 description as template (remove leading duration)
+        sample = skill['descriptionByLevel'].get("1", "")
+        # Strip the leading duration part like "5秒内"
+        if "秒内" in sample:
+            sample = sample.split("秒内", 1)[1].strip()
+        lines.append(f"- 详细：Lv({levels})：({seconds})秒内 {sample}")
     return "\n".join(lines)
 
 
