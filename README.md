@@ -1,38 +1,19 @@
-# Game Card Fetch Skills
+# PJSK Cards Skill for OpenClaw 🎀
 
-这个仓库包含了用于 OpenClaw 的游戏卡面获取技能。
+This repository contains the **PJSK Cards** skill for OpenClaw, specifically tailored for fetching Project Sekai character card data and images.
 
-## 包含内容
+## 🚀 Installation
 
-### 1. Project Sekai (PJSK) 卡面获取
-- **技能路径**: `skills/sekai-cards/`
-- **功能**: 从 `sekai.best` 获取最新的卡面数据和图片 URL。
-- **脚本**: `skills/sekai-cards/scripts/get_card.py`
-- **SOP 要求**: 输出必须包含标题、角色名、团队、属性、稀有度、详情链接和图片 URL。
+Tell your OpenClaw agent:
+"Install the pjsk-cards skill from https://github.com/rin4096/pjsk-cards-skill"
 
-### 2. BanG Dream! (Bandori) 卡面获取
-- **技能路径**: `skills/bandori-cards/`
-- **功能**: 使用 Bestdori API 获取卡面，支持 MyGO!!!!! 等成员。支持搜索卡面前缀或卡片详情（招募台词/Flavor Text 等）。
-- **脚本**: `skills/bandori-cards/scripts/bandori_bestdori.py`
+## 📂 Contents
+- `skills/pjsk-cards/`: The main skill folder.
+  - `SKILL.md`: Skill definition and documentation.
+  - `scripts/get_card.py`: The Python engine for fetching data.
 
-## 使用方法
+## 📝 Descriptions
+This skill is designed to work seamlessly with OpenClaw, providing formatted output and high-resolution assets for Project Sekai enthusiasts. It supports searching by name, ID, and title.
 
-将对应的技能文件夹放到 OpenClaw 的 workspace 目录中即可。
-
-### 目录结构
-```
-workspace/
-└── skills/
-    ├── sekai-cards/
-    │   ├── SKILL.md
-    │   └── scripts/
-    │       └── get_card.py
-    └── bandori-cards/
-        ├── SKILL.md
-        └── scripts/
-            └── bandori_bestdori.py
-```
-
-## 更新日志
-- **2026-01-31**: `bandori-cards` 支持搜索卡片详情（招募台词/Flavor Text），例如搜索 `Kitty` 会扫描 gacha quote。
-- **2026-01-31**: 更新了 `sekai-cards` 的 SOP，规范了绘名要求的详细情报输出格式。
+---
+*Maintained by rin4096 (Ena) with help from Mizuki.*
